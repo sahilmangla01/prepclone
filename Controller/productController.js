@@ -3,6 +3,7 @@ const MockSchema = require('../Model/ProductModel')
 const videoSchema = require('../Model/VideoModel')
 const otherData = require('../Model/DataModel')
 const projects = require("../Model/Projects")
+const user = require("../Model/UserModel")
 
 const Razorpay = require('razorpay')
 
@@ -117,9 +118,91 @@ const newOrder=async (req,res)=>{
         } catch (error) {
             console.error(error);
             res.status(500).send('Internal Server Error');
-        }
+        }
+    }
+    
+    const dashboardData =async (req,res)=>{
+        try {
+            const {id,userId} = req.body;
+            const find =await user.findOne({_id:userId,'mock.mockId':id})
+            if(find){
+               res.send("product already exist")
+            }
+            else{
+                await user.updateOne({_id:userId},{$push:{mock:{mockId:id}}})
+            } 
+            }
+
+
+            
+        catch (error) {
+           console.error(error);
+           res.status(500).send('Internal Server Error');
+        
+       }
+        
+    }
+
+    const getDashboardData = async(req ,res)=>{
+        try {
+            const {userId} = req.body
+            const data = await user.findOne({_id:userId}).populate('mock.mockId')
+
+            res.status(200).send(data)
+
+            
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+         
+        }
+    }
+
+
+    const programme = async(req,res)=>{
+        try {
+            const {userId , name} = req.body;
+            const find = await user.findOne({_id :userId,'fullstack':name})
+            
+            if(!find){
+                await user.updateOne({_id:userId},{fullstack:name})
+            }
+            if(find){
+
+                res.send("product already exist")
+            }
+           
+             
+
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+        }
+    }
+    const master = async(req,res)=>{
+        try {
+            const {userId , name} = req.body;
+            const find = await user.findOne({_id :userId,'master':name})
+            
+            if(!find){
+                await user.updateOne({_id:userId},{master:name})
+            }
+            if(find){
+
+                res.send("product already exist")
+            }
+           
+             
+
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+        }
     }
 
 
 
-module.exports = {createMock , getMockData , createVideo ,getvideodata, createotherdata ,getotherdata ,createprojects,getprojectdata,newOrder}
+module.exports = {createMock , getMockData , createVideo ,getvideodata, createotherdata ,getotherdata ,createprojects,getprojectdata,newOrder , dashboardData, getDashboardData, programme,master}
